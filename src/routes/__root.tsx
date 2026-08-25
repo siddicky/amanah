@@ -16,7 +16,7 @@ export const Route = createRootRoute({
         name: "description",
         content: "Amanah scores KYC capture channels for Pakistani financial inclusion. Defensive liveness and injection detection — no synthetic media.",
       },
-      { name: "theme-color", content: "#0c0e0d" },
+      { name: "theme-color", content: "#0b0f0c" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },

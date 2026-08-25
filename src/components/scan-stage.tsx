@@ -19,9 +19,9 @@ export function ScanStage({
     if (!ctx) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const styles = getComputedStyle(canvas);
-    const raised = styles.getPropertyValue("--color-raised").trim() || "#1b1f1c";
-    const sage = styles.getPropertyValue("--color-primary").trim() || "#b8c4b6";
-    const fg = styles.getPropertyValue("--color-fg").trim() || "#e8ebe6";
+    const raised = styles.getPropertyValue("--color-raised").trim() || "#1a201c";
+    const sage = styles.getPropertyValue("--color-primary").trim() || "#b4c8b5";
+    const fg = styles.getPropertyValue("--color-fg").trim() || "#e7ece6";
 
     const draw = (t: number) => {
       const w = canvas.width;

@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0c0e0d;
-  --color-surface: #141816;
-  --color-raised: #1b1f1c;
-  --color-fg: #e8ebe6;
-  --color-muted: #8b9488;
-  --color-subtle: #6b7368;
-  --color-primary: #b8c4b6;
-  --color-primary-fg: #0c0e0d;
+  --color-bg: #0b0f0c;
+  --color-surface: #131916;
+  --color-raised: #1a201c;
+  --color-fg: #e7ece6;
+  --color-muted: #889a88;
+  --color-subtle: #697568;
+  --color-primary: #b4c8b5;
+  --color-primary-fg: #0b0f0c;
   --color-border: color-mix(in oklab, var(--color-fg) 12%, transparent);
   --color-border-strong: color-mix(in oklab, var(--color-fg) 22%, transparent);
-  --color-ok: #9aaf96;
+  --color-ok: #96b395;
   --color-watch: #c4b49a;
   --color-fail: #c4a0a0;
-  --color-ring: #b8c4b6;
+  --color-ring: #b4c8b5;
 
   --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
@@ -107,7 +107,7 @@
   body,
   #app {
     background: #fff !important;
-    color: #161a17 !important;
+    color: #151c16 !important;
   }
 
   header,
@@ -117,12 +117,12 @@
   }
 
   .report-sheet {
-    color: #161a17;
+    color: #151c16;
   }
 
   .report-sheet .text-muted,
   .report-sheet .text-subtle {
-    color: #4d564c !important;
+    color: #4a5c4e !important;
   }
 
   a {
