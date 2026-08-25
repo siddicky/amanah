@@ -1,17 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Assessment, CaptureMode, DetectorResult, Lang, ScenarioId } from "./types";
+import type { Assessment, CaptureMode, DetectorResult, Lang, ScenarioId, TenantId } from "./types";
 import { scoreAssessment } from "./scoring";
 
 type AmanahState = {
   lang: Lang;
   scenarioId: ScenarioId;
+  tenantId: TenantId;
   mode: CaptureMode;
   current: Assessment | null;
   history: Assessment[];
   hydrated: boolean;
   setLang: (lang: Lang) => void;
   setScenario: (id: ScenarioId) => void;
+  setTenant: (id: TenantId) => void;
   setMode: (mode: CaptureMode) => void;
   runSimulated: () => Assessment;
   commit: (a: Assessment) => void;
@@ -34,6 +36,7 @@ const seed: Assessment = {
   scenarioId: "inclusion-field",
   mode: "simulated",
   tenant: "Noor Wallet",
+  tenantId: "wallet",
   overall: 84,
   band: "strong",
   cameraLabel: null,
@@ -92,6 +95,7 @@ const seed: Assessment = {
   notes: [
     "Weak lighting is not fraud. Assist the capture (torch, shade, exposure lock) so Android Go users still clear KYC.",
     "Do not lower injection or replay thresholds to ‘make inclusion work’.",
+    "Wallet policy fails closed on injection only — lighting stays the inclusion lever.",
   ],
 };
 
@@ -100,16 +104,19 @@ export const useAmanah = create<AmanahState>()(
     (set, get) => ({
       lang: "en",
       scenarioId: "inclusion-field",
+      tenantId: "wallet",
       mode: "simulated",
       current: seed,
       history: [seed],
       hydrated: false,
       setLang: (lang) => set({ lang }),
       setScenario: (scenarioId) => set({ scenarioId }),
+      setTenant: (tenantId) => set({ tenantId }),
       setMode: (mode) => set({ mode }),
       runSimulated: () => {
         const a = scoreAssessment({
           scenarioId: get().scenarioId,
+          tenantId: get().tenantId,
           mode: "simulated",
         });
         set((s) => ({
@@ -126,11 +133,12 @@ export const useAmanah = create<AmanahState>()(
       markHydrated: () => set({ hydrated: true }),
     }),
     {
-      name: "amanah-v1",
+      name: "amanah-v2",
       skipHydration: true,
       partialize: (s) => ({
         lang: s.lang,
         scenarioId: s.scenarioId,
+        tenantId: s.tenantId,
         current: s.current,
         history: s.history,
       }),

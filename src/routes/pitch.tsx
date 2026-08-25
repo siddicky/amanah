@@ -75,9 +75,14 @@ function Pitch() {
         </Button>
       </div>
 
-      <Button asChild variant="subtle" className="w-full">
-        <Link to="/assess">{t.run}</Link>
-      </Button>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button asChild variant="subtle">
+          <Link to="/cloud">{t.nav.cloud}</Link>
+        </Button>
+        <Button asChild>
+          <Link to="/assess">{t.run}</Link>
+        </Button>
+      </div>
 
       <p className="text-xs leading-relaxed text-subtle">{t.disclaimer}</p>
     </div>

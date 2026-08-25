@@ -4,6 +4,7 @@ import { ScanStage } from "@/components/scan-stage";
 import { Button } from "@/components/ui/button";
 import { copy, DETECTOR_ORDER } from "@/lib/amanah/copy";
 import { liveOverridesFromSession, sampleFrame, type FrameSample } from "@/lib/amanah/live";
+import { TENANT_ORDER } from "@/lib/amanah/policy";
 import { scoreAssessment } from "@/lib/amanah/scoring";
 import { useAmanah } from "@/lib/amanah/store";
 import type { ScenarioId } from "@/lib/amanah/types";
@@ -17,6 +18,8 @@ function Assess() {
   const lang = useAmanah((s) => s.lang);
   const scenarioId = useAmanah((s) => s.scenarioId);
   const setScenario = useAmanah((s) => s.setScenario);
+  const tenantId = useAmanah((s) => s.tenantId);
+  const setTenant = useAmanah((s) => s.setTenant);
   const mode = useAmanah((s) => s.mode);
   const setMode = useAmanah((s) => s.setMode);
   const commit = useAmanah((s) => s.commit);
@@ -32,6 +35,7 @@ function Assess() {
   const samplesRef = useRef<FrameSample[]>([]);
   const prevPixels = useRef<Uint8ClampedArray | null>(null);
   const fpsRef = useRef(0);
+  const labelsRef = useRef<string[]>([]);
   const modeRef = useRef(mode);
   modeRef.current = mode;
 
@@ -59,6 +63,12 @@ function Assess() {
         audio: false,
       });
       streamRef.current = stream;
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        labelsRef.current = devices.filter((d) => d.kind === "videoinput").map((d) => d.label);
+      } catch {
+        labelsRef.current = [];
+      }
       const v = document.createElement("video");
       v.srcObject = stream;
       v.muted = true;
@@ -116,15 +126,17 @@ function Assess() {
 
     const label = streamRef.current?.getVideoTracks()[0]?.label ?? null;
     const liveOk = usedLive && samplesRef.current.length > 4;
-    const overrides = liveOk
-      ? liveOverridesFromSession(samplesRef.current, label, fpsRef.current)
-      : undefined;
+    const live = liveOk
+      ? liveOverridesFromSession(samplesRef.current, label, fpsRef.current, labelsRef.current)
+      : null;
 
     const assessment = scoreAssessment({
       scenarioId,
+      tenantId,
       mode: liveOk ? "live" : "simulated",
       cameraLabel: label,
-      liveOverrides: overrides,
+      liveOverrides: live?.scores,
+      diagnostics: live?.diagnostics,
     });
     commit(assessment);
     stopStream();
@@ -140,6 +152,30 @@ function Assess() {
         <p className="text-[11px] uppercase tracking-[0.2em] text-muted">{t.assess}</p>
         <h1 className="mt-2 font-display text-3xl tracking-tight">{t.suiteHint}</h1>
       </header>
+
+      <section>
+        <p className="text-[11px] uppercase tracking-[0.18em] text-muted">{t.tenantLabel}</p>
+        <div className="mt-2 grid gap-2">
+          {TENANT_ORDER.map((id) => {
+            const on = tenantId === id;
+            const meta = t.tenants[id];
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setTenant(id)}
+                className={cn(
+                  "rounded-sm px-3 py-2.5 text-start shadow-[var(--shadow-border)]",
+                  on ? "bg-raised" : "bg-surface opacity-80 hover:opacity-100",
+                )}
+              >
+                <p className="text-sm font-medium">{meta.name}</p>
+                <p className="mt-0.5 text-xs text-muted">{meta.blurb}</p>
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="grid gap-3">
         {SCENARIOS.map((id) => {

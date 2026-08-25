@@ -1,4 +1,3 @@
-import { clamp } from "@/lib/utils";
 import type {
   Assessment,
   Band,
@@ -6,18 +5,19 @@ import type {
   DetectorId,
   DetectorResult,
   Finding,
+  LiveDiagnostics,
   ScenarioId,
-} from "./types";
-import { DETECTOR_ORDER } from "./copy";
+  TenantId,
+} from "./types.ts";
+import { DETECTOR_ORDER } from "./types.ts";
+import { liveSummary } from "./live.ts";
+import { tenantOf } from "./policy.ts";
 
-const WEIGHTS: Record<DetectorId, number> = {
-  injection: 0.25,
-  replay: 0.18,
-  liveness: 0.17,
-  lighting: 0.12,
-  temporal: 0.13,
-  document: 0.15,
-};
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+const WEIGHTS: Record<DetectorId, number> = tenantOf("wallet").weights;
 
 const BASE: Record<ScenarioId, Record<DetectorId, number>> = {
   "inclusion-field": {
@@ -46,7 +46,7 @@ const BASE: Record<ScenarioId, Record<DetectorId, number>> = {
   },
 };
 
-function bandOf(score: number): Band {
+export function bandOf(score: number): Band {
   if (score < 50) return "fail";
   if (score < 75) return "watch";
   return "strong";
@@ -116,31 +116,76 @@ const RECS: Record<DetectorId, Record<Band, string>> = {
   },
 };
 
-export function scoreAssessment(opts: {
+const TENANT_NAME: Record<TenantId, string> = {
+  wallet: "Noor Wallet",
+  bank: "HBL Digital",
+  telco: "JazzCash SIM",
+};
+
+function notesFor(scenarioId: ScenarioId, tenantId: TenantId, tripped: boolean): string[] {
+  const base =
+    scenarioId === "inclusion-field"
+      ? [
+          "Weak lighting is not fraud. Assist the capture (torch, shade, exposure lock) so Android Go users still clear KYC.",
+          "Do not lower injection or replay thresholds to ‘make inclusion work’.",
+        ]
+      : scenarioId === "hostile-channel"
+        ? [
+            "Channel integrity failed. No amount of a smiling selfie should override a virtual camera.",
+            "Inclusion does not apply: this session is not an underserved user, it is a substituted sink.",
+          ]
+        : ["Lab control is the ceiling, not the field. Tune policy on inclusion-field captures."];
+
+  if (tenantId === "bank") {
+    base.push(
+      "Bank policy: a failed injection, replay, or document bind cannot be averaged out by a high liveness score.",
+    );
+  } else if (tenantId === "telco") {
+    base.push("SIM-KYC may torch-assist a dim capture. It must not accept a screenshot CNIC.");
+  } else {
+    base.push("Wallet policy fails closed on injection only — lighting stays the inclusion lever.");
+  }
+  if (tripped) {
+    base.push("Fail-closed control tripped. Overall is capped below Hold regardless of other detectors.");
+  }
+  return base;
+}
+
+export function decorateAssessment(opts: {
+  id: string;
+  at: number;
   scenarioId: ScenarioId;
   mode: CaptureMode;
-  cameraLabel?: string | null;
-  liveOverrides?: Partial<Record<DetectorId, number>>;
+  tenantId: TenantId;
+  cameraLabel: string | null;
+  scores: number[];
+  diagnostics?: LiveDiagnostics;
 }): Assessment {
-  const { scenarioId, mode, cameraLabel = null, liveOverrides } = opts;
-  const detectors: DetectorResult[] = DETECTOR_ORDER.map((id) => {
-    const raw = liveOverrides?.[id] ?? jitter(BASE[scenarioId][id]);
-    const score = Math.round(raw);
+  const policy = tenantOf(opts.tenantId);
+  const detectors: DetectorResult[] = DETECTOR_ORDER.map((id, i) => {
+    const score = Math.round(clamp(opts.scores[i] ?? 0, 0, 100));
     const b = bandOf(score);
+    const summary =
+      opts.mode === "live"
+        ? liveSummary(id, b, opts.diagnostics)
+        : SUMMARIES[opts.scenarioId][id];
     return {
       id,
       score,
       confidence: clamp(0.72 + score / 400, 0.6, 0.97),
       band: b,
-      summary: SUMMARIES[scenarioId][id],
+      summary,
       recommendation: RECS[id][b],
     };
   });
 
-  const overall = Math.round(
-    detectors.reduce((acc, d) => acc + d.score * WEIGHTS[d.id], 0),
+  let overall = Math.round(
+    detectors.reduce((acc, d) => acc + d.score * policy.weights[d.id], 0),
   );
-  const weakest = detectors.reduce((a, b) => (a.score <= b.score ? a : b));
+  const tripped = policy.failClosed.some(
+    (id) => detectors.find((d) => d.id === id)?.band === "fail",
+  );
+  if (tripped) overall = Math.min(overall, 49);
 
   const findings: Finding[] = detectors
     .filter((d) => d.band !== "strong")
@@ -152,38 +197,51 @@ export function scoreAssessment(opts: {
       detail: d.summary,
     }));
 
-  const notes: string[] =
-    scenarioId === "inclusion-field"
-      ? [
-          "Weak lighting is not fraud. Assist the capture (torch, shade, exposure lock) so Android Go users still clear KYC.",
-          "Do not lower injection or replay thresholds to ‘make inclusion work’.",
-        ]
-      : scenarioId === "hostile-channel"
-        ? [
-            "Channel integrity failed. No amount of a smiling selfie should override a virtual camera.",
-            "Inclusion does not apply: this session is not an underserved user, it is a substituted sink.",
-          ]
-        : [
-            "Lab control is the ceiling, not the field. Tune policy on inclusion-field captures.",
-          ];
-
   return {
-    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
-    at: Date.now(),
-    scenarioId,
-    mode,
-    tenant: "Noor Wallet",
+    id: opts.id,
+    at: opts.at,
+    scenarioId: opts.scenarioId,
+    mode: opts.mode,
+    tenant: TENANT_NAME[opts.tenantId],
+    tenantId: opts.tenantId,
     overall,
     band: bandOf(overall),
     detectors,
     findings,
-    notes,
-    cameraLabel,
+    notes: notesFor(opts.scenarioId, opts.tenantId, tripped),
+    cameraLabel: opts.cameraLabel,
+    diagnostics: opts.diagnostics,
   };
+}
+
+export function scoreAssessment(opts: {
+  scenarioId: ScenarioId;
+  mode: CaptureMode;
+  tenantId?: TenantId;
+  cameraLabel?: string | null;
+  liveOverrides?: Partial<Record<DetectorId, number>>;
+  diagnostics?: LiveDiagnostics;
+}): Assessment {
+  const tenantId = opts.tenantId ?? "wallet";
+  const { scenarioId, mode, cameraLabel = null, liveOverrides } = opts;
+  const scores = DETECTOR_ORDER.map((id) => {
+    const raw = liveOverrides?.[id] ?? jitter(BASE[scenarioId][id]);
+    return Math.round(raw);
+  });
+  return decorateAssessment({
+    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+    at: Date.now(),
+    scenarioId,
+    mode,
+    tenantId,
+    cameraLabel,
+    scores,
+    diagnostics: opts.diagnostics,
+  });
 }
 
 export function weakestDetector(a: Assessment): DetectorResult {
   return a.detectors.reduce((x, y) => (x.score <= y.score ? x : y));
 }
 
-export { WEIGHTS, bandOf };
+export { WEIGHTS, SUMMARIES, RECS, TENANT_NAME, BASE };

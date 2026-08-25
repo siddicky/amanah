@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BookOpen, LayoutGrid, ScanLine, Speech } from "lucide-react";
+import { BookOpen, Cloud, LayoutGrid, ScanLine, Speech } from "lucide-react";
 import { useEffect } from "react";
 import { AmanahMark } from "@/components/mark";
 import { copy } from "@/lib/amanah/copy";
@@ -10,6 +10,7 @@ const NAV = [
   { to: "/", key: "home" as const, icon: LayoutGrid },
   { to: "/assess", key: "assess" as const, icon: ScanLine },
   { to: "/threats", key: "threats" as const, icon: BookOpen },
+  { to: "/cloud", key: "cloud" as const, icon: Cloud },
   { to: "/pitch", key: "pitch" as const, icon: Speech },
 ];
 
@@ -37,7 +38,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         urdu ? "font-urdu" : "font-sans",
       )}
     >
-      <header className="sticky top-0 z-20 border-b border-border bg-bg">
+      <header className="sticky top-0 z-20 border-b border-border bg-bg print:hidden">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-fg">
             <AmanahMark className="size-6 text-primary" />
@@ -63,24 +64,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-4 pb-28 pt-6">{children}</main>
+      <main className="mx-auto w-full max-w-3xl px-4 pb-28 pt-6 print:max-w-none print:px-0 print:pb-0 print:pt-0">
+        {children}
+      </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-bg/94 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm">
-        <ul className="mx-auto grid max-w-3xl grid-cols-4">
+      <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-bg/94 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm print:hidden">
+        <ul className="mx-auto flex w-full max-w-3xl flex-nowrap">
           {NAV.map((item) => {
             const active = pathname === item.to;
             const Icon = item.icon;
             return (
-              <li key={item.to}>
+              <li key={item.to} className="min-w-0" style={{ flex: "1 1 0%" }}>
                 <Link
                   to={item.to}
                   className={cn(
-                    "flex h-16 flex-col items-center justify-center gap-1 text-[11px] tracking-wide",
+                    "flex h-14 w-full min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden px-0.5 text-[9px] leading-none tracking-wide",
                     active ? "text-fg" : "text-muted",
                   )}
                 >
-                  <Icon className="size-4" strokeWidth={active ? 2.2 : 1.7} />
-                  {t.nav[item.key]}
+                  <Icon className="size-3.5 shrink-0" strokeWidth={active ? 2.2 : 1.7} />
+                  <span className="max-w-full truncate">{t.nav[item.key]}</span>
                 </Link>
               </li>
             );

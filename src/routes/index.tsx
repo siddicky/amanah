@@ -13,11 +13,12 @@ function Home() {
   const lang = useAmanah((s) => s.lang);
   const current = useAmanah((s) => s.current);
   const t = copy[lang];
+  const tenantName = t.tenants[current?.tenantId ?? "wallet"].name;
 
   if (!current) {
     return (
       <div className="space-y-6">
-        <HeroKicker t={t} />
+        <HeroKicker t={t} tenant={tenantName} />
         <p className="text-sm text-muted">{t.emptyScan}</p>
         <Button asChild>
           <Link to="/assess">{t.run}</Link>
@@ -31,7 +32,7 @@ function Home() {
 
   return (
     <div className="space-y-8">
-      <HeroKicker t={t} />
+      <HeroKicker t={t} tenant={tenantName} />
 
       <section className="flex flex-col items-center pt-2">
         <ScoreRing score={current.overall} band={current.band} />
@@ -63,9 +64,7 @@ function Home() {
 
       <section>
         <div className="flex items-baseline justify-between">
-          <h2 className="text-[11px] uppercase tracking-[0.18em] text-muted">
-            {t.tenant}
-          </h2>
+          <h2 className="text-[11px] uppercase tracking-[0.18em] text-muted">{tenantName}</h2>
           <Link to="/threats" className="inline-flex items-center gap-1 text-xs text-muted">
             {t.threats}
             <ArrowUpRight className="size-3.5" />
@@ -83,7 +82,7 @@ function Home() {
   );
 }
 
-function HeroKicker({ t }: { t: Copy }) {
+function HeroKicker({ t, tenant }: { t: Copy; tenant: string }) {
   return (
     <header>
       <p className="text-[11px] uppercase tracking-[0.2em] text-muted">{t.track}</p>
@@ -91,7 +90,7 @@ function HeroKicker({ t }: { t: Copy }) {
         {t.tagline}
       </h1>
       <p className="mt-2 text-sm text-muted">
-        {t.tenant} · {t.product}
+        {tenant} · {t.product}
       </p>
     </header>
   );

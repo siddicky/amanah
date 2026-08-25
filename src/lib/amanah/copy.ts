@@ -1,13 +1,7 @@
-import type { DetectorId, Lang } from "./types";
+import type { DetectorId, Lang } from "./types.ts";
+import { DETECTOR_ORDER } from "./types.ts";
 
-export const DETECTOR_ORDER: DetectorId[] = [
-  "injection",
-  "replay",
-  "liveness",
-  "lighting",
-  "temporal",
-  "document",
-];
+export { DETECTOR_ORDER };
 
 export const copy = {
   en: {
@@ -16,6 +10,63 @@ export const copy = {
     tenant: "Noor Wallet",
     track: "Financial inclusion · Pakistan",
     scoreLabel: "Resilience score",
+    tenantLabel: "Tenant policy",
+    copyLink: "Copy share link",
+    linkCopied: "Link copied",
+    savePdf: "Save PDF",
+    share: "Share report",
+    shareHint: "A compact token of scores — no face, no CNIC, no video.",
+    shareFail: "Could not copy. Use Save PDF instead.",
+    policy: "Policy",
+    liveDiag: "On-device signals",
+    fps: "FPS",
+    samples: "Frames",
+    virtualCam: "Virtual camera",
+    nativeCam: "Native camera",
+    tenants: {
+      wallet: {
+        name: "Noor Wallet",
+        blurb: "Inclusion-first. Fail closed on injection only. Lighting is an assist, not a reject.",
+      },
+      bank: {
+        name: "HBL Digital",
+        blurb: "Bank KYC. Injection, replay, and document bind cannot be averaged away.",
+      },
+      telco: {
+        name: "JazzCash SIM",
+        blurb: "SIM-KYC. Torch-assist is allowed. A screenshot CNIC is not.",
+      },
+    },
+    cloudTitle: "Run it on Alibaba Cloud",
+    cloudLead:
+      "The regional round is on Alibaba Cloud. Amanah is a stateless scoring UI — no faces leave the device, so you do not need a GPU farm or a biometric store.",
+    cloudSections: [
+      {
+        kicker: "What to host",
+        title: "A Node web app. Nothing else.",
+        body: "Build output is a Nitro server plus static assets. No database, no Redis, no object store of selfies. Camera frames are scored in the browser and discarded. That is the inclusion and the privacy design.",
+      },
+      {
+        kicker: "Recommended path",
+        title: "SAE or ECS in Singapore, OSS for the static shell.",
+        body: "Push the container to Container Registry (acr). Run Serverless App Engine or a small ECS instance in ap-southeast-1. Put public assets on OSS + CDN. TLS on the custom domain. Do not open a second region just for the demo.",
+      },
+      {
+        kicker: "What not to stand up",
+        title: "No PAI training job. No face database.",
+        body: "Amanah is a detector, not a generator. You do not train a GAN, you do not store CNIC images, you do not run liveness on Function Compute against uploaded video. If a judge asks where the model lives: the policy weights live in the repo; live heuristics run on-device.",
+      },
+      {
+        kicker: "Credits and Qoder",
+        title: "Use the Grade 1 plan for the build, Cloud for the URL.",
+        body: "Qoder is the development seat. The thing you hand a judge is this app on a stable HTTPS origin — Vercel is the public mirror; Alibaba Cloud is the track-native target. Keep both. Do not migrate mid-pitch.",
+      },
+      {
+        kicker: "Hardening",
+        title: "Fail closed in the cloud the same way as on the phone.",
+        body: "Same six detectors, same tenant weights. Environment variables are unused. If SAE recycles the instance, assessments still live in the judge’s browser. That is intentional.",
+      },
+    ],
     lastAssessed: "Last assessed",
     run: "Run assessment",
     viewReport: "View report",
@@ -116,7 +167,7 @@ export const copy = {
         body: "A resilience layer Pakistani fintechs can drop in front of onboarding — cheap enough for inclusion, strict enough for synthetic identity.",
       },
     ],
-    nav: { home: "Home", assess: "Assess", threats: "Threats", pitch: "Pitch" },
+    nav: { home: "Home", assess: "Assess", threats: "Threats", pitch: "Pitch", cloud: "Cloud" },
     recsTitle: "What a defender should do",
     emptyScan: "No assessment yet. Run the field-capture suite — it is the inclusion case.",
     weakest: "Weakest control",
@@ -141,6 +192,63 @@ export const copy = {
     tenant: "نور والیٹ",
     track: "مالی شمولیت · پاکستان",
     scoreLabel: "اسکورِ تحفظ",
+    tenantLabel: "پالیسیِ ادارہ",
+    copyLink: "لنک کاپی کریں",
+    linkCopied: "لنک کاپی ہو گیا",
+    savePdf: "پی ڈی ایف محفوظ کریں",
+    share: "رپورٹ شیئر کریں",
+    shareHint: "صرف اسکورز کا ٹوکن — نہ چہرہ، نہ شناختی کارڈ، نہ ویڈیو۔",
+    shareFail: "کاپی نہیں ہوا۔ پی ڈی ایف استعمال کریں۔",
+    policy: "پالیسی",
+    liveDiag: "آن ڈیوائس اشارے",
+    fps: "ایف پی ایس",
+    samples: "فریم",
+    virtualCam: "ورچوئل کیمرہ",
+    nativeCam: "اصلی کیمرہ",
+    tenants: {
+      wallet: {
+        name: "نور والیٹ",
+        blurb: "شمولیت پہلے۔ صرف انجیکشن پر بند۔ روشنی مدد ہے، انکار نہیں۔",
+      },
+      bank: {
+        name: "ایچ بی ایل ڈیجیٹل",
+        blurb: "بینک کے وائی سی۔ انجیکشن، ری پلے اور دستاویز کا اوسط نہیں نکالا جا سکتا۔",
+      },
+      telco: {
+        name: "جاز کیش سیم",
+        blurb: "سیم کے وائی سی۔ ٹارچ کی مدد جائز ہے۔ اسکرین شاٹ شناختی کارڈ نہیں۔",
+      },
+    },
+    cloudTitle: "علی بابا کلاؤڈ پر چلائیں",
+    cloudLead:
+      "علاقائی راؤنڈ علی بابا کلاؤڈ پر ہے۔ امانت ایک بے حالت اسکورنگ ایپ ہے — چہرے ڈیوائس نہیں چھوڑتے، اس لیے جی پی یو فارم یا بائیو میٹرک سٹور کی ضرورت نہیں۔",
+    cloudSections: [
+      {
+        kicker: "کیا میزبانی کریں",
+        title: "ایک نوڈ ویب ایپ۔ کچھ اور نہیں۔",
+        body: "بلڈ ایک نائٹرو سرور اور اسٹیٹک اثاثے ہیں۔ نہ ڈیٹابیس، نہ ریڈس، نہ سیلفی سٹور۔ کیمرہ فریم براؤزر میں اسکور ہو کر مٹ جاتے ہیں۔ یہی شمولیت اور رازداری ہے۔",
+      },
+      {
+        kicker: "تجویزہ راستہ",
+        title: "سنگاپور میں ایس اے ای یا ای سی ایس، او ایس ایس پر اسٹیٹک شیل۔",
+        body: "کنٹینر رجسٹری پر پش کریں۔ ap-southeast-1 میں سرورلیس ایپ انجین یا چھوٹی ای سی ایس چلائیں۔ پبلک اثاثے او ایس ایس اور سی ڈی این پر۔ کسٹم ڈومین پر ٹی ایل ایس۔ ڈیمو کے لیے دوسرا ریجن نہ کھولیں۔",
+      },
+      {
+        kicker: "کیا نہ بنائیں",
+        title: "نہ پی اے آئی ٹریننگ، نہ چہروں کا ڈیٹا بیس۔",
+        body: "امانت ڈیٹیکٹر ہے، جنریٹر نہیں۔ جی اے این نہیں سکھاتے۔ شناختی تصاویر محفوظ نہیں کرتے۔ اگر جج پوچھے ماڈل کہاں ہے: وزن ریپو میں ہیں؛ لائیو ہیورسٹکس ڈیوائس پر چلتے ہیں۔",
+      },
+      {
+        kicker: "کریڈٹس اور قودر",
+        title: "گریڈ 1 پلان بلڈ کے لیے، کلاؤڈ یو آر ایل کے لیے۔",
+        body: "قودر ڈیولپمنٹ سیٹ ہے۔ جج کو مستحکم ایچ ٹی ٹی پی ایس دیں۔ Vercel عوامی آئینہ ہے؛ علی بابا کلاؤڈ ٹریک کا ہدف ہے۔ دونوں رکھیں۔ پیشکش کے بیچ منتقل نہ ہوں۔",
+      },
+      {
+        kicker: "مضبوطی",
+        title: "کلاؤڈ پر بھی ویسا ہی بند کریں جیسا فون پر۔",
+        body: "وہی چھ ڈیٹیکٹر، وہی پالیسی۔ ماحول کے متغیرات غیر استعمال۔ اگر انسٹنس ری سائیکل ہو، جائزہ جج کے براؤزر میں رہتا ہے۔ یہ جان بوجھ کر ہے۔",
+      },
+    ],
     lastAssessed: "آخری جائزہ",
     run: "جائزہ لیں",
     viewReport: "رپورٹ دیکھیں",
@@ -241,7 +349,7 @@ export const copy = {
         body: "ایک تہہِ تحفظ جو پاکستانی فن ٹیک آن بورڈنگ کے آگے لگا سکیں — شمولیت کے لیے سستی، جعلی شناخت کے خلاف سخت۔",
       },
     ],
-    nav: { home: "ہوم", assess: "جائزہ", threats: "خطرات", pitch: "پیشکش" },
+    nav: { home: "ہوم", assess: "جائزہ", threats: "خطرات", pitch: "پیشکش", cloud: "کلاؤڈ" },
     recsTitle: "مدافع کو کیا کرنا چاہیے",
     emptyScan: "ابھی کوئی جائزہ نہیں۔ میدانی سوٹ چلائیں — یہ شمولیت کا کیس ہے۔",
     weakest: "سب سے کمزور کنٹرول",
