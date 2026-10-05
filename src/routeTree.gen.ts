@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessRouteImport } from './routes/assess'
 import { Route as CloudRouteImport } from './routes/cloud'
+import { Route as OpticsRouteImport } from './routes/optics'
 import { Route as PitchRouteImport } from './routes/pitch'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as ThreatsRouteImport } from './routes/threats'
@@ -29,6 +30,11 @@ const AssessRoute = AssessRouteImport.update({
 const CloudRoute = CloudRouteImport.update({
   id: '/cloud',
   path: '/cloud',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpticsRoute = OpticsRouteImport.update({
+  id: '/optics',
+  path: '/optics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PitchRoute = PitchRouteImport.update({
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assess': typeof AssessRoute
   '/cloud': typeof CloudRoute
+  '/optics': typeof OpticsRoute
   '/pitch': typeof PitchRoute
   '/report': typeof ReportRoute
   '/threats': typeof ThreatsRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assess': typeof AssessRoute
   '/cloud': typeof CloudRoute
+  '/optics': typeof OpticsRoute
   '/pitch': typeof PitchRoute
   '/report': typeof ReportRoute
   '/threats': typeof ThreatsRoute
@@ -68,23 +76,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/assess': typeof AssessRoute
   '/cloud': typeof CloudRoute
+  '/optics': typeof OpticsRoute
   '/pitch': typeof PitchRoute
   '/report': typeof ReportRoute
   '/threats': typeof ThreatsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assess' | '/cloud' | '/pitch' | '/report' | '/threats'
+  fullPaths:
+    '/' | '/assess' | '/cloud' | '/optics' | '/pitch' | '/report' | '/threats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assess' | '/cloud' | '/pitch' | '/report' | '/threats'
+  to: '/' | '/assess' | '/cloud' | '/optics' | '/pitch' | '/report' | '/threats'
   id:
-    '__root__' | '/' | '/assess' | '/cloud' | '/pitch' | '/report' | '/threats'
+    | '__root__'
+    | '/'
+    | '/assess'
+    | '/cloud'
+    | '/optics'
+    | '/pitch'
+    | '/report'
+    | '/threats'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssessRoute: typeof AssessRoute
   CloudRoute: typeof CloudRoute
+  OpticsRoute: typeof OpticsRoute
   PitchRoute: typeof PitchRoute
   ReportRoute: typeof ReportRoute
   ThreatsRoute: typeof ThreatsRoute
@@ -111,6 +129,13 @@ declare module '@tanstack/react-router' {
       path: '/cloud'
       fullPath: '/cloud'
       preLoaderRoute: typeof CloudRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/optics': {
+      id: '/optics'
+      path: '/optics'
+      fullPath: '/optics'
+      preLoaderRoute: typeof OpticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pitch': {
@@ -141,6 +166,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssessRoute: AssessRoute,
   CloudRoute: CloudRoute,
+  OpticsRoute: OpticsRoute,
   PitchRoute: PitchRoute,
   ReportRoute: ReportRoute,
   ThreatsRoute: ThreatsRoute,

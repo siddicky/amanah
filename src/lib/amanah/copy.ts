@@ -185,6 +185,25 @@ export const copy = {
     prev: "Prev",
     next: "Next",
     holdNative: "Hold native capture, keep the two-second motion window, no upload fallback.",
+    optics: {
+      kicker: "Published first-stage screen",
+      title: "Fifteen videos. One pass of light.",
+      lead: "A UCLA group (Ozcan lab) encodes a batch of videos into one phase pattern, shines 520 nm light through it, and reads real versus fake from paired detectors. Amanah does not run that bench. It is the screening idea a wallet queue would sit behind — after the phone has already scored the capture channel.",
+      open: "Open the optical screen",
+      rule: "For each video the score is (I⁺ − I⁻) / (I⁺ + I⁻). Above zero is fake. The paper draws fake in red and real in blue. Here fake uses the fail tone and real uses sage.",
+      sketch: "Decision sketch",
+      sketchNote:
+        "These fifteen pairs illustrate the rule. They are not a sensor frame from the experiment, and they are not a live camera.",
+      fake: "Fake",
+      real: "Real",
+      where: "Where this sits next to Amanah",
+      whereBody:
+        "The optical pass never sees a virtual-camera label, a torch-less shade shot, or a dropped frame clock. Those are Amanah’s job, on the handset, before any video leaves the phone. The bench is a later, batched authenticity screen: high sensitivity, so a fake is rarely missed, and specificity near 96% so the few false alarms can go to a slower digital review. Fail closed still belongs on the phone.",
+      honest:
+        "The photographed experiment is free-space only (no diffractive layers), L = 15, SLM at 60 Hz. Deeper decoders and the energy table are the paper’s in-silico comparisons, estimated from off-the-shelf parts — not a wattmeter on the bench.",
+      cite: "Ghapandar Kashani, Chen & Ozcan. eLight 6:27 (2026).",
+      read: "Read the paper",
+    },
   },
   ur: {
     product: "امانت",
@@ -367,6 +386,25 @@ export const copy = {
     prev: "پیچھے",
     next: "آگے",
     holdNative: "اصلی کیپچر برقرار رکھیں، دو سیکنڈ کی حرکت، اپ لوڈ کا متبادل نہیں۔",
+    optics: {
+      kicker: "شائع شدہ پہلی چھانٹی",
+      title: "پندرہ ویڈیوز۔ روشنی کا ایک پاس۔",
+      lead: "یو سی ایل اے کی اوزکان لیب ویڈیوز کو ایک فیز پیٹرن میں سمیتی ہے، 520 نینو میٹر روشنی گزارتی ہے، اور جوڑی دار ڈیٹیکٹروں سے اصلی اور جعلی پڑھتی ہے۔ امانت وہ بینچ نہیں چلاتی۔ یہ وہ خیال ہے جو والیٹ کی قطار کے پیچھے آئے — فون کے چینل اسکور کے بعد۔",
+      open: "آپٹیکل سکرین کھولیں",
+      rule: "ہر ویڈیو کا اسکور (I⁺ − I⁻) / (I⁺ + I⁻) ہے۔ صفر سے اوپر جعلی ہے۔ کاغذ میں جعلی سرخ ہے اور اصلی نیلی۔ یہاں جعلی فیل ٹون ہے اور اصلی سیج۔",
+      sketch: "فیصلے کا خاکہ",
+      sketchNote:
+        "یہ پندرہ جوڑیاں قاعدہ دکھاتی ہیں۔ یہ تجربے کا سینسر فریم نہیں، اور لائیو کیمرہ نہیں۔",
+      fake: "جعلی",
+      real: "اصلی",
+      where: "امانت کے ساتھ یہ کہاں بیٹھتا ہے",
+      whereBody:
+        "آپٹیکل پاس ورچوئل کیمرے کا لیبل، بغیر ٹارچ کی چھاؤں، یا گرا ہوا فریم کلاک نہیں دیکھتا۔ یہ امانت کا کام ہے، ہینڈسیٹ پر، ویڈیو فون چھوڑنے سے پہلے۔ بینچ بعد کی بیچ چھانٹی ہے: حساسیت اونچی تاکہ جعلی شاذ ہی چھوٹے، اختصاص تقریباً ۹۶٪ تاکہ چند غلط الارم سست ڈیجیٹل جائزے میں جائیں۔ بند کرنا پھر بھی فون پر ہے۔",
+      honest:
+        "تصویر والا تجربہ صرف خالی فضا ہے (بغیر ڈفریکٹو تہوں کے)، L = 15، ایس ایل ایم 60 ہرٹز۔ گہری ڈیکوڈر اور توانائی کی جدول کاغذ کے حسابی موازنے ہیں — بینچ کے واٹ میٹر نہیں۔",
+      cite: "غاپندر کشانی، چن اور اوزکان۔ eLight 6:27 (2026)۔",
+      read: "مقالہ پڑھیں",
+    },
   },
 } as const;
 

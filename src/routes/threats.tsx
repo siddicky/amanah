@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
 import { copy, DETECTOR_ORDER } from "@/lib/amanah/copy";
 import { useAmanah } from "@/lib/amanah/store";
 
@@ -37,6 +38,10 @@ function Threats() {
       <aside className="rounded-lg bg-raised p-4">
         <p className="text-[11px] uppercase tracking-[0.18em] text-muted">{t.notes}</p>
         <p className="mt-2 text-sm leading-relaxed">{t.inclusionAside}</p>
+        <Link to="/optics" className="mt-4 inline-flex items-center gap-1 text-sm text-fg">
+          {t.optics.open}
+          <ArrowUpRight className="size-3.5" />
+        </Link>
       </aside>
 
       <p className="text-xs leading-relaxed text-subtle">{t.disclaimer}</p>
